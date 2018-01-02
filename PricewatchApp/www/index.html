@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <title>Pricewatch</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+    <script src="https://unpkg.com/onsenui/js/angular-onsenui.min.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+    <ons-navigator swipeable id="myNavigator" page="home.html"></ons-navigator>
+
+    <template id="home.html">
+        <ons-page ng-controller="HomeController">
+            <ons-toolbar>
+                <div class="center">iOS AppStore Pricewatch</div>
+                <div class="right"><ons-toolbar-button><ons-icon icon="ion-android-add" ng-click="showAdd()" /></ons-toolbar-button></div>
+            </ons-toolbar>
+            <ons-card ng-repeat="x in pricewatches" style="overflow: hidden;" ng-click="showDetail($index)">
+                <div class="title">{{ x.Name }}</div>
+                <div class="content">
+                    <img src='{{ x.ImageUrl }}' width='175' height='175' style="float:left; margin-right: 10px;" />
+                    <span style="color: {{ x.LowerPrice ? 'green' : 'black' }}">{{ x.Price }}</span>
+                    <br />
+                    <del>{{ x.LowerPrice ? x.LowerPrice : "" }}</del>
+                </div>
+            </ons-card>
+            <style>
+
+                ons-card {
+                    cursor: pointer;
+                    color: #333;
+                }
+
+                .card__title,
+                .card--material__title {
+                    font-size: 20px;
+                }
+            </style>
+        </ons-page>
+    </template>
+
+    <template id="detail.html">
+        <ons-page ng-controller="DetailController">
+            <ons-toolbar>
+                <div class="left"><ons-back-button>Back</ons-back-button></div>
+                <div class="center" style="overflow: hidden; text-overflow: ellipsis;">{{ item.Name }}</div>
+                <div class="right"><ons-toolbar-button><ons-icon icon="ion-trash-a" ng-click="requestDelete()" /></ons-toolbar-button></div>
+            </ons-toolbar>
+            <div style="padding: 10px;">
+                <div style="overflow: hidden;">
+                    <img src='{{ item.ImageUrl }}' width='175' height='175' style="float:left; margin-right: 10px;" />
+                    <a href="{{ item.URL }}"><img src="appstore.svg" /></a>
+                </div>
+            </div>
+            <ons-list>
+                <ons-list-header>
+                    Price History
+                </ons-list-header>
+                <ons-list-item ng-repeat="x in pricehistory">
+                    <span style="position:absolute; right:50%">{{ x.Date }}</span>
+                    <span style="color: {{ x.Color }}; position:absolute; right:10px">{{ x.Price }}</span>
+                </ons-list-item>
+            </ons-list>
+            <ons-modal var="modal">
+                <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+                <br><br>
+                Please wait.<br>Deleting ...
+            </ons-modal>
+        </ons-page>
+    </template>
+
+    <template id="add.html">
+        <ons-page ng-controller="AddController">
+            <ons-toolbar>
+                <div class="left"><ons-back-button>Back</ons-back-button></div>
+                <div class="center">Add price to watch</div>
+            </ons-toolbar>
+            <ons-list>
+                <ons-list-header>
+                    App store page to watch
+                </ons-list-header>
+                <ons-list-item>
+                    <div class="center">
+                        <ons-input id="url-input" style="width:100%" modifier="large" ng-model="url" ng-change="urlChanged()" placeholder="https://itunes.apple.com/..."></ons-input>
+                    </div>
+                </ons-list-item>
+            </ons-list>
+            <ons-button id="add-button" ng-click="addPricewatch()" disabled="true" style="margin:10px; text-align:center; display:block;">Add</ons-button>
+            <ons-modal var="modal">
+                <ons-icon icon="ion-load-c" spin="true"></ons-icon>
+                <br><br>
+                Please wait.<br>Fetching ...
+            </ons-modal>
+        </ons-page>
+    </template>
+
+    <script>
+                /* window.fn.swipe = function (target) {
+                    carousel.setActiveIndex(Number(target.id.slice(-1)));
+                }*/
+    </script>
+</body>
+</html>

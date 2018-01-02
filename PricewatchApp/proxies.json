@@ -1,0 +1,12 @@
+﻿{
+  "$schema": "http://json.schemastore.org/proxies",
+  "proxies": {
+    "StaticFileServerProxy": {
+      "matchCondition": {
+        "route": "www/{*path}"
+
+      },
+      "backendUri": "https://pricewatchfunctionapp.azurewebsites.net/api/StaticFileServer?file={path}"
+    }
+  }
+}
