@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using HtmlAgilityPack;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -28,7 +29,9 @@ namespace PricewatchApp
                 string imgUrl = doc.QuerySelector("div.product img.artwork").Attributes["src-swap"].Value;
 
                 // Return the result
-                return req.CreateResponse(HttpStatusCode.OK, imgUrl);
+                var response = req.CreateResponse(HttpStatusCode.OK, imgUrl);
+                response.Headers.CacheControl = new CacheControlHeaderValue() { MaxAge = new TimeSpan(1, 0, 0, 0) }; // One day
+                return response;
             }
         }
     }
