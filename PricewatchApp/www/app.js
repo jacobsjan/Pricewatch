@@ -2,6 +2,11 @@
     'use strict';
     var module = angular.module('app', ['onsen']);
 
+    function parsePrice(price) {
+        var f = parseFloat(price.replace(',', '.'));
+        return isNaN(f) ? 0 : f;
+    }
+
     module.controller('AddController', function ($scope, $data, $http) {
         $scope.addPricewatch = function () {
             // Show loading pop-up
@@ -42,7 +47,7 @@
 
                 if (i < response.data.length - 1) {
                     var nextPrice = response.data[i + 1];
-                    price.Color = parseFloat(price.Price.replace(',', '.')) < parseFloat(nextPrice.Price.replace(',', '.')) ? "darkgreen" : "darkred";
+                    price.Color = parsePrice(price.Price) < parsePrice(nextPrice.Price) ? "darkgreen" : "darkred";
                 } else {
                     price.Color = "black";
                 }
@@ -78,7 +83,7 @@
         $data.getPricewatches($http).then(function (response) {
             angular.forEach(response.data, function (pricewatch) {
                 // Add a LowerPrice property to indicate the previous price of the app if it's lower than the current one
-                pricewatch["LowerPrice"] = pricewatch.PreviousPrice && (parseFloat(pricewatch.Price.replace(',', '.')) < parseFloat(pricewatch.PreviousPrice.replace(',', '.'))) ? pricewatch.PreviousPrice : null;
+                pricewatch["LowerPrice"] = pricewatch.PreviousPrice && (parsePrice(pricewatch.Price) < parsePrice(pricewatch.PreviousPrice)) ? pricewatch.PreviousPrice : null;
 
                 // Load the real image url's from the server
                 $data.getImageUrl(pricewatch, $http).then(function (imgResponse) {

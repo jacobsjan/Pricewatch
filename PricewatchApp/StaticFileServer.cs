@@ -29,6 +29,7 @@ namespace PricewatchApp
                 response.Content = new StreamContent(stream);
                 response.Content.Headers.ContentType =
                     new MediaTypeHeaderValue(GetMimeType(filePath));
+                //response.Headers.CacheControl = new CacheControlHeaderValue() { MaxAge = new TimeSpan(1, 0, 0, 0) }; // One day
                 return response;
             }
             catch

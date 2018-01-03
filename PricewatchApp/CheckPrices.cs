@@ -15,9 +15,9 @@ namespace PricewatchApp
     public static class CheckPrices
     {
         [FunctionName("CheckPrices")]
-        public static async System.Threading.Tasks.Task RunAsync([TimerTrigger("0 0 0/12 * * *")]TimerInfo myTimer, TraceWriter log)
+        public static async System.Threading.Tasks.Task RunAsync([TimerTrigger("0 0 0 * * *")]TimerInfo myTimer, TraceWriter log)
         {
-            log.Info($"Pricewatch function fired at: {DateTime.Now}");
+            log.Info($"CheckPrices function fired at: {DateTime.Now}");
             Thread.CurrentThread.CurrentCulture = new CultureInfo("nl-BE"); // Otherwise the prices won't parse correctly
 
             // Start of with an empty mail
@@ -68,8 +68,9 @@ namespace PricewatchApp
                         // Add info to the mail contents
                         if (latestPrice != null)
                         {
-                            float newPriceFloat = float.Parse(price.Substring(0, price.Length - 2));
-                            float latestPriceFloat = float.Parse(latestPrice.Price1.Substring(0, latestPrice.Price1.Length - 2));
+                            float.TryParse(price.Substring(0, price.Length - 2).Replace(',', '.'), out float newPriceFloat);
+                            float.TryParse(latestPrice.Price1.Substring(0, latestPrice.Price1.Length - 2).Replace(',', '.'), out float latestPriceFloat);
+
                             string color = newPriceFloat < latestPriceFloat ? "darkgreen" : "darkred";
                             mailContents += $"<tr><td><p><a href='{app.URL}'><img src='cid:{attachements.Last().ContentId}' width='175' height='175'></td><td style='vertical-align: top;'></a> <a href='{app.URL}'>{app.Name}</a> kost nu <span style='color:{color}'>{price}</span> (in plaats van {latestPrice.Price1})!</p></td></tr>";
                         } else {
