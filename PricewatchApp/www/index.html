@@ -21,10 +21,11 @@
                 <div class="center">iOS AppStore Pricewatch</div>
                 <div class="right"><ons-toolbar-button><ons-icon icon="ion-android-add" ng-click="showAdd()" /></ons-toolbar-button></div>
             </ons-toolbar>
+            <div ng-show="isLoading" style="text-align: center; position: relative; top: 50%; transform: translateY(-50%);"><ons-icon size="35px" spin="true" icon="ion-load-d"></ons-icon> Loading ...</div>
             <ons-card ng-repeat="x in pricewatches" style="overflow: hidden;" ng-click="showDetail($index)">
                 <div class="title">{{ x.Name }}</div>
                 <div class="content">
-                    <img src='{{ x.ImageUrl }}' width='175' height='175' style="float:left; margin-right: 10px;" />
+                    <img ng-src='{{ x.ImageUrl }}' width='175' height='175' style="float:left; margin-right: 10px;" />
                     <span style="color: {{ x.LowerPrice ? 'green' : 'black' }}">{{ x.Price }}</span>
                     <br />
                     <del>{{ x.LowerPrice ? x.LowerPrice : "" }}</del>
@@ -54,7 +55,7 @@
             </ons-toolbar>
             <div style="padding: 10px;">
                 <div style="overflow: hidden;">
-                    <img src='{{ item.ImageUrl }}' width='175' height='175' style="float:left; margin-right: 10px;" />
+                    <img ng-src='{{ item.ImageUrl }}' width='175' height='175' style="float:left; margin-right: 10px;" />
                     <a href="{{ item.URL }}"><img src="appstore.svg" /></a>
                 </div>
             </div>

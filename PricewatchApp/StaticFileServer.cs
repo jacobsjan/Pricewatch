@@ -36,7 +36,7 @@ namespace PricewatchApp
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
-        }
+        } 
 
         private static string GetScriptPath()
             => Path.Combine(GetEnvironmentVariable("HOME"), @"site\wwwroot");

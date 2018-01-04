@@ -80,6 +80,8 @@
     });
 
     module.controller('HomeController', function ($scope, $data, $http) {
+        // Load pricewatch data
+        $scope.isLoading = true;
         $data.getPricewatches($http).then(function (response) {
             angular.forEach(response.data, function (pricewatch) {
                 // Add a LowerPrice property to indicate the previous price of the app if it's lower than the current one
@@ -91,6 +93,7 @@
                 });
             });
 
+            $scope.isLoading = false;
             $data.pricewatches = $scope.pricewatches = response.data;
         });
 
