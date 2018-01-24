@@ -47,7 +47,7 @@ namespace PricewatchApp
                 newApp.URL,
                 Price = newApp.Prices.ElementAt(0).Price1,
                 PreviousPrice = "",
-                ImageUrl = doc.QuerySelector("div.product img.artwork").Attributes["src-swap"].Value
+                ImageUrl = doc.QuerySelector("div.product-hero__media img.we-artwork__image").Attributes["src"].Value
             };
 
             // Return results as JSON

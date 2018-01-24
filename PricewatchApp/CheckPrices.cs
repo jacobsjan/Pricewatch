@@ -35,7 +35,7 @@ namespace PricewatchApp
                     var doc = web.Load(url);
 
                     // Find the price on the page
-                    var price = doc.QuerySelector(".price").InnerText;
+                    var price = doc.QuerySelector(".inline-list__item--bulleted").InnerText;
 
                     // Lookup the latestprice in the database
                     var latestPrice = app.Prices.OrderBy(p => p.Date).LastOrDefault();
@@ -49,7 +49,7 @@ namespace PricewatchApp
                         app.Prices.Add(newPrice);
 
                         // Download the app image
-                        string imgUrl = doc.QuerySelector("div.product img.artwork").Attributes["src-swap"].Value;
+                        string imgUrl = doc.QuerySelector("div.product-hero__media img.we-artwork__image").Attributes["src"].Value;
                         using (WebClient client = new WebClient())
                         {
                             byte[] imageData = client.DownloadData(imgUrl);
