@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using HtmlAgilityPack;
 using Microsoft.Azure.WebJobs;
@@ -26,6 +27,7 @@ namespace PricewatchApp
             List<Attachment> attachements = new List<Attachment>();
 
             // Load apps from database
+            var priceRegex = new Regex(@"\d+(,\d+)?\s€");
             using (var db = new PricewatchModel(System.Environment.GetEnvironmentVariable("CONNECTION_STRING")))
             {
                 foreach (App app in db.Apps.ToList()) {
@@ -36,16 +38,20 @@ namespace PricewatchApp
 
                     // Find the price on the page
                     var price = doc.QuerySelector(".inline-list__item--bulleted").InnerText;
+                    var match = priceRegex.Match(price);
+                    if (match.Success) price = match.Value;
 
                     // Lookup the latestprice in the database
                     var latestPrice = app.Prices.OrderBy(p => p.Date).LastOrDefault();
                     if (latestPrice == null || latestPrice.Price1.CompareTo(price) != 0)
                     {
                         // Add the new price to the database
-                        Price newPrice = new Price();
-                        newPrice.App1 = app;
-                        newPrice.Price1 = price;
-                        newPrice.Date = DateTime.Now;
+                        Price newPrice = new Price
+                        {
+                            App1 = app,
+                            Price1 = price,
+                            Date = DateTime.Now
+                        };
                         app.Prices.Add(newPrice);
 
                         // Download the app image
