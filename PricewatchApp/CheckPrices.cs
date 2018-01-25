@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading;
-using HtmlAgilityPack;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using SendGrid;
@@ -27,38 +25,29 @@ namespace PricewatchApp
             List<Attachment> attachements = new List<Attachment>();
 
             // Load apps from database
-            var priceRegex = new Regex(@"\d+(,\d+)?\s€");
             using (var db = new PricewatchModel(System.Environment.GetEnvironmentVariable("CONNECTION_STRING")))
             {
                 foreach (App app in db.Apps.ToList()) {
-                    // Download the page from the app store
-                    var url = app.URL;
-                    var web = new HtmlWeb();
-                    var doc = web.Load(url);
-
-                    // Find the price on the page
-                    var price = doc.QuerySelector(".inline-list__item--bulleted").InnerText;
-                    var match = priceRegex.Match(price);
-                    if (match.Success) price = match.Value;
+                    // Download and parse AppStore page
+                    var page = new AppStorePage(app.URL);
 
                     // Lookup the latestprice in the database
                     var latestPrice = app.Prices.OrderBy(p => p.Date).LastOrDefault();
-                    if (latestPrice == null || latestPrice.Price1.CompareTo(price) != 0)
+                    if (latestPrice == null || latestPrice.Price1.CompareTo(page.Price) != 0)
                     {
                         // Add the new price to the database
                         Price newPrice = new Price
                         {
                             App1 = app,
-                            Price1 = price,
+                            Price1 = page.Price,
                             Date = DateTime.Now
                         };
                         app.Prices.Add(newPrice);
 
                         // Download the app image
-                        string imgUrl = doc.QuerySelector("div.product-hero__media img.we-artwork__image").Attributes["src"].Value;
                         using (WebClient client = new WebClient())
                         {
-                            byte[] imageData = client.DownloadData(imgUrl);
+                            byte[] imageData = client.DownloadData(page.ImageUrl);
                             string imgBase64 = System.Convert.ToBase64String(imageData);
 
                             attachements.Add(new Attachment
@@ -74,13 +63,13 @@ namespace PricewatchApp
                         // Add info to the mail contents
                         if (latestPrice != null)
                         {
-                            float.TryParse(price.Substring(0, price.Length - 2).Replace(',', '.'), out float newPriceFloat);
+                            float.TryParse(page.Price.Substring(0, page.Price.Length - 2).Replace(',', '.'), out float newPriceFloat);
                             float.TryParse(latestPrice.Price1.Substring(0, latestPrice.Price1.Length - 2).Replace(',', '.'), out float latestPriceFloat);
 
                             string color = newPriceFloat < latestPriceFloat ? "darkgreen" : "darkred";
-                            mailContents += $"<tr><td><p><a href='{app.URL}'><img src='cid:{attachements.Last().ContentId}' width='175' height='175'></td><td style='vertical-align: top;'></a> <a href='{app.URL}'>{app.Name}</a> kost nu <span style='color:{color}'>{price}</span> (in plaats van {latestPrice.Price1})!</p></td></tr>";
+                            mailContents += $"<tr><td><p><a href='{app.URL}'><img src='cid:{attachements.Last().ContentId}' width='175' height='175'></td><td style='vertical-align: top;'></a> <a href='{app.URL}'>{app.Name}</a> kost nu <span style='color:{color}'>{page.Price}</span> (in plaats van {latestPrice.Price1})!</p></td></tr>";
                         } else {
-                            mailContents += $"<tr><td><p><a href='{app.URL}'><img src='cid:{attachements.Last().ContentId}' width='175' height='175'></td><td style='vertical-align: top;'></a> <a href='{app.URL}'>{app.Name}</a> kost nu {price}!</p></td></tr>";
+                            mailContents += $"<tr><td><p><a href='{app.URL}'><img src='cid:{attachements.Last().ContentId}' width='175' height='175'></td><td style='vertical-align: top;'></a> <a href='{app.URL}'>{app.Name}</a> kost nu {page.Price}!</p></td></tr>";
                         }
                     }
                 }

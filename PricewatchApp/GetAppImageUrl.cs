@@ -24,12 +24,10 @@ namespace PricewatchApp
                 if (String.IsNullOrEmpty(url)) throw new Exception("Invalid appName.");
 
                 // Fetch the image URL from the AppStore
-                var web = new HtmlWeb();
-                var doc = web.Load(url);
-                string imgUrl = doc.QuerySelector("div.product-hero__media img.we-artwork__image").Attributes["src"].Value;
+                var page = new AppStorePage(url);
 
                 // Return the result
-                var response = req.CreateResponse(HttpStatusCode.OK, imgUrl);
+                var response = req.CreateResponse(HttpStatusCode.OK, page.ImageUrl);
                 response.Headers.CacheControl = new CacheControlHeaderValue() { MaxAge = new TimeSpan(1, 0, 0, 0) }; // One day
                 return response;
             }

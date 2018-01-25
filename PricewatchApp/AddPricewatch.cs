@@ -19,19 +19,18 @@ namespace PricewatchApp
             log.Info($"AddPricewatch function processing request for { url }.");
             
             // Fetch the app page from the AppStore
-            var web = new HtmlAgilityPack.HtmlWeb();
-            var doc = web.Load(url);
+            var page = new AppStorePage(url);
 
             // Construct new app 
             App newApp = new App
             {
-                Name = doc.QuerySelector("h1[itemprop=name]").InnerText,
+                Name = page.Name,
                 URL = url
             };
             newApp.Prices.Add(new Price
             {
                 Date = DateTime.Now,
-                Price1 = doc.QuerySelector(".price").InnerText
+                Price1 = page.Price
             });
 
             // Add the app tothe database
@@ -47,7 +46,7 @@ namespace PricewatchApp
                 newApp.URL,
                 Price = newApp.Prices.ElementAt(0).Price1,
                 PreviousPrice = "",
-                ImageUrl = doc.QuerySelector("div.product-hero__media img.we-artwork__image").Attributes["src"].Value
+                page.ImageUrl
             };
 
             // Return results as JSON
