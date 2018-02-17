@@ -17,8 +17,7 @@ namespace PricewatchApp
         public static async System.Threading.Tasks.Task RunAsync([TimerTrigger("0 0 0 * * *")]TimerInfo myTimer, TraceWriter log)
         {
             log.Info($"CheckPrices function fired at: {DateTime.Now}");
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("nl-BE"); // Otherwise the prices won't parse correctly
-
+            
             // Start of with an empty mail
             string mailContents = "";
             int imageCounter = 0;
