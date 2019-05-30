@@ -24,7 +24,7 @@ namespace PricewatchApp
                 if (String.IsNullOrEmpty(url)) throw new Exception("Invalid appName.");
 
                 // Fetch the image URL from the AppStore
-                var page = new AppStorePage(url);
+                var page = StorePageFactory.Create(url);
 
                 // Return the result
                 var response = req.CreateResponse(HttpStatusCode.OK, page.ImageUrl);

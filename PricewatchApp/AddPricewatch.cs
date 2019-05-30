@@ -17,10 +17,20 @@ namespace PricewatchApp
         {
             url = WebUtility.UrlDecode(url);
             log.Info($"AddPricewatch function processing request for { url }.");
-            
-            // Fetch the app page from the AppStore
-            var page = new AppStorePage(url);
 
+            // Fetch the app page from the AppStore
+            IStorePage page;
+            try
+            {
+                page = StorePageFactory.Create(url);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                log.Error(e.StackTrace);
+                throw e;
+            }
+            
             // Construct new app 
             App newApp = new App
             {

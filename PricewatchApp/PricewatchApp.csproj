@@ -7,6 +7,7 @@
     <PackageReference Include="HtmlAgilityPack.CssSelectors" Version="1.0.2" />    
     <PackageReference Include="MediaTypeMap" Version="2.1.0" />    
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.7" />    
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />    
     <PackageReference Include="Sendgrid" Version="9.9.0" />
   </ItemGroup>
   <ItemGroup>

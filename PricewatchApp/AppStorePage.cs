@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace PricewatchApp
 {
-    class AppStorePage
+    class AppStorePage: IStorePage
     {
         static Regex priceRegex = new Regex(@"\d+(,\d+)?\s€");
 
