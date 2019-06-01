@@ -1,15 +1,20 @@
+using System.Threading.Tasks;
+
 namespace PricewatchApp
 {
     public static class StorePageFactory
     {
-		public static IStorePage Create(string url)
+        public async static Task<IStorePage> Create(string url)
         {
-			if (url.StartsWith("https://www.hollandamerica.com"))
+            IStorePage page;
+            if (url.StartsWith("https://www.hollandamerica.com"))
             {
-                return new CruiseStorePage(url);
+                page = new CruiseStorePage();
             } else {
-                return new AppStorePage(url);
+                page = new AppStorePage();
             }
+            await page.Load(url);
+            return page;
         }
     }
 }

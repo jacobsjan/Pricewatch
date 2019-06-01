@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -13,7 +14,7 @@ namespace PricewatchApp
     public static class AddPricewatch
     {
         [FunctionName("AddPricewatch")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "AddPricewatch/url/{url}")]HttpRequestMessage req, string url, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "AddPricewatch/url/{url}")]HttpRequestMessage req, string url, TraceWriter log)
         {
             url = WebUtility.UrlDecode(url);
             log.Info($"AddPricewatch function processing request for { url }.");
@@ -22,7 +23,7 @@ namespace PricewatchApp
             IStorePage page;
             try
             {
-                page = StorePageFactory.Create(url);
+                page = await StorePageFactory.Create(url);
             }
             catch (Exception e)
             {

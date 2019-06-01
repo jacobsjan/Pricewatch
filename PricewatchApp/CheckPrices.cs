@@ -28,7 +28,7 @@ namespace PricewatchApp
             {
                 foreach (App app in db.Apps.ToList()) {
                     // Download and parse AppStore page
-                    var page = StorePageFactory.Create(app.URL);
+                    var page = await StorePageFactory.Create(app.URL);
 
                     // Lookup the latestprice in the database
                     var latestPrice = app.Prices.OrderBy(p => p.Date).LastOrDefault();

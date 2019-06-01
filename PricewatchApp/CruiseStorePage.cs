@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace PricewatchApp
 {
@@ -14,15 +15,17 @@ namespace PricewatchApp
         static Regex itineraryRegex = new Regex(@"\'itineraryId\'\s\:\s\'([A-Z0-9]+)'");
         static Regex nameRegex = new Regex(",\\\"nightName\\\"\\:\\\"(.+?)\\\"");
 
-        public string Price { get; }
-        public string ImageUrl { get; }
-        public string Name { get; }
+        public string Price { get; set; }
+        public string ImageUrl { get; set; }
+        public string Name { get; set; }
 
-        public CruiseStorePage(string url)
+        public async Task Load(string url)
         {
             // Download the page from the cruise store
-            var web = new HtmlWeb();
-            var doc = web.Load(url);
+            var wc = new WebClient();
+            var html = await wc.DownloadStringTaskAsync(new Uri(url));
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
 
             // Find the cruiseId on the page
             var match = cruiseRegex.Match(doc.DocumentNode.InnerText);
@@ -30,7 +33,7 @@ namespace PricewatchApp
             var cruiseId = match.Groups[1].Value;
 
             // Download the cruise JSON
-            WebClient wc = new WebClient();
+            wc = new WebClient();
             wc.Headers.Add("brand", "hal");
             wc.Headers.Add("currencyCode", "EUR");
             wc.Headers.Add("country", "BE");
@@ -38,7 +41,7 @@ namespace PricewatchApp
             wc.Headers.Add("Host", "www.hollandamerica.com");
             wc.Headers.Add("Accept", "*/*");
 
-            var json = wc.DownloadString("https://www.hollandamerica.com/api/v2/price/cruise/" + cruiseId + "?");
+            var json = await wc.DownloadStringTaskAsync("https://www.hollandamerica.com/api/v2/price/cruise/" + cruiseId + "?");
             var cruise = JToken.Parse(json);
 
             // Find the price 

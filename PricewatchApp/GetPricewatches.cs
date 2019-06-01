@@ -16,7 +16,7 @@ namespace PricewatchApp
     public static class GetPricewatches
     {
         [FunctionName("GetPricewatches")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("GetPricewatches function processing a request.");
 

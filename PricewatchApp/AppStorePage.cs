@@ -2,6 +2,7 @@
 using System;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace PricewatchApp
 {
@@ -9,15 +10,17 @@ namespace PricewatchApp
     {
         static Regex priceRegex = new Regex(@"\d+(,\d+)?\s€");
 
-        public string Price { get; }
-        public string ImageUrl { get; }
-        public string Name { get; }
+        public string Price { get; set; }
+        public string ImageUrl { get; set; }
+        public string Name { get; set; }
 
-        public AppStorePage(string url)
+        public async Task Load(string url)
         {
             // Download the page from the app store
-            var web = new HtmlWeb();
-            var doc = web.Load(url);
+            var wc = new WebClient();
+            var html = await wc.DownloadStringTaskAsync(new Uri(url));
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
 
             // Find the price on the page
             this.Price = doc.QuerySelector(".inline-list__item--bulleted").InnerText;
