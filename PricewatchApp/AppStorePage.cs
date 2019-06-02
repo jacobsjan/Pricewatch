@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -18,7 +19,8 @@ namespace PricewatchApp
         {
             // Download the page from the app store
             var wc = new WebClient();
-            var html = await wc.DownloadStringTaskAsync(new Uri(url));
+            var data = await wc.DownloadDataTaskAsync(url);
+            var html = Encoding.UTF8.GetString(data);
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
