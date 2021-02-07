@@ -25,15 +25,15 @@ namespace PricewatchApp
             doc.LoadHtml(html);
 
             // Find the price on the page
-            this.Price = doc.QuerySelector(".inline-list__item--bulleted").InnerText;
+            this.Price = doc.QuerySelector(".app-header__list__item--price").InnerText;
             var match = priceRegex.Match(this.Price);
             if (match.Success) this.Price = match.Value;
 
             // Find the app image on the page
-            this.ImageUrl = doc.QuerySelector("div.product-hero__media img.we-artwork__image").Attributes["src"].Value;
+            this.ImageUrl = doc.QuerySelector(".we-artwork__source").Attributes["srcset"].Value.Split(' ')[0];
 
             // Find the app name on the page
-            this.Name = WebUtility.HtmlDecode(doc.QuerySelector(".product-header__title").ChildNodes[0].InnerText).Trim();
+            this.Name = WebUtility.HtmlDecode(doc.QuerySelector(".app-header__title").ChildNodes[0].InnerText).Trim();
         }
     }
 }
